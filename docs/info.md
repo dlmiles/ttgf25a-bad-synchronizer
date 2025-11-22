@@ -9,12 +9,15 @@ You can also include images in this folder and reference them in the markdown. E
 
 ## How it works
 
-Explain how your project works
+Badly
+
+This project is based on (https://github.com/ericsmi/tt07-bad-synchronizer)
+but for GF180MCU.
 
 ## How to test
 
-Explain how to use your project
+Align clocks, push them apart, look for bit errors
 
 ## External hardware
 
-List external hardware used in your project (e.g. PMOD, LED display, etc), if any
+A way to generate a clock

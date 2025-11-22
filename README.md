@@ -1,5 +1,11 @@
 ![](../../workflows/gds/badge.svg) ![](../../workflows/docs/badge.svg) ![](../../workflows/test/badge.svg) ![](../../workflows/fpga/badge.svg)
 
+# Information
+
+This project is based on (https://github.com/ericsmi/tt07-bad-synchronizer)
+
+See also (https://github.com/dlmiles/ttihp0p2-bad-synchronizer)
+
 # Tiny Tapeout Verilog Project Template
 
 - [Read the documentation for project](docs/info.md)
