@@ -6,6 +6,11 @@ This project is based on (https://github.com/ericsmi/tt07-bad-synchronizer)
 
 See also (https://github.com/dlmiles/ttihp0p2-bad-synchronizer)
 
+The design is modified slightly to allow the type of counter to be selected,
+4-bit binary base-2 or 4-bit Gray-code.
+
+![Circuit Diagram](docs/diagram_tikz.png)
+
 # Tiny Tapeout Verilog Project Template
 
 - [Read the documentation for project](docs/info.md)

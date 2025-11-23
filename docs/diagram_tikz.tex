@@ -1,0 +1,230 @@
+\documentclass[12pt,oneside,tikz]{standalone}
+\usepackage{pgf,tikz,comment}
+\usepackage{circuitikz}
+\usepackage[active,tightpage]{preview}
+\PreviewEnvironment{tikzpicture}
+\usetikzlibrary{positioning,calc,arrows}
+\usepackage[a4paper,landscape,margin=0.5cm,left=3.75cm]{geometry}
+\ctikzset{logic ports=ieee}
+\pagestyle{empty}
+
+\begin{document}
+
+\title{Figure}
+\author{}
+\maketitle
+\section{Figure}
+
+\begin{tikzpicture}[>=latex, every node/.style={font=\small\sffamily}, node distance=2.5cm]
+
+\tikzset{flipflop DQ/.style={flipflop, scale=.7,
+         flipflop def={t1=D, t6=Q, c3=1, clock wedge size=.3, font=\normalsize},
+}}
+\tikzset{flipflop DQC/.style={flipflop, scale=.7,
+         flipflop def={t1=D, t6=Q, c3=1, nd=1, clock wedge size=.3, font=\normalsize},
+}}
+
+% reused flipflop model for ports
+\tikzset{counter/.style={
+         %draw,rectangle,minimum height=25mm,minimum width=15mm}
+         flipflop, scale=1,
+         flipflop def={t1=EN, t2=SEL, t6=O, nd=1, clock wedge size=2, font=\normalsize},
+}}
+
+\tikzset{linebusticko/.style={
+         draw,rectangle,very thin,minimum height=0.5mm,minimum width=0.5mm}
+}
+
+\tikzstyle{fonta} = [draw,rectangle,text centered]
+\tikzstyle{fontb} = [draw,rectangle,text centered,font=\bf\it]
+
+\newcommand\currentcoordinate{\the\tikz@lastxsaved,\the\tikz@lastysaved}
+\newcommand\currentx{\the\tikz@lastxsaved}
+\newcommand\currenty{\the\tikz@lastysaved}
+\makeatother
+\newcommand\fontb{\bf}
+%\newcommand\linebustickzzz{\draw let \p1 = (\currentcoordinate) in [thick] (\p1) -- ++(0.1em,0.1em)}
+\newcommand\linebustick{\textbf{/}} % cheat with font
+
+\coordinate (origin) at (0,0);
+\coordinate (portin) at (0,0); % used for absolute X value
+\coordinate (portout) at (20,0); % used for absolute Y value
+
+%\begin{circuitikz} %[nodes=draw]
+  \node[counter] (counter) at (3.5,6.75) {};
+  \node[clockwedge, scale=1.25] at ([yshift=-8.5mm] counter.west) (counter_clk) {};
+  \node[flipflop DQC] (R1) at (10,7) {};
+  \node[flipflop DQC] (R2) at (15,7) {};
+  \node[flipflop DQC] (Rskew) at (8,2) {};
+
+  \node[above=2pt of R1.north] {\small R1};
+  \node[above=2pt of R2.north] {\small R2};
+  \node[above=2pt of counter.north] {\small COUNTER};
+
+  % clk
+  \draw let
+    \p1 = (portin),
+    \p2 = (counter.pin 3),
+    \p3 = (\x1,\y2)
+    in {
+        node[anchor=east, align=right, text width=1cm] (text_clk) at ([xshift=-0.1em] \p3) {\fontb{clk}}
+        node[circ] (circ_clk) at (\p3) {}
+    };
+  \draw let
+    \p1 = (portin),
+    \p2 = (counter.pin 3),
+    \p3 = (\x1,\y2)
+    in [thick, blue] (\p3) -- node[above, midway] {clk1} (counter.pin 3) -- (counter_clk); % needed extra leg
+  \draw[thick, blue] (circ_clk) -| ++(1.5cm,0) |- ++(0,-2cm) |- (Rskew.pin 1);
+
+  % rst_n
+  \draw let
+    \p1 = (portin),
+    \p2 = ([yshift=-1.15cm] circ_clk),
+    \p3 = (\x1,\y2)
+    in {
+        node[anchor=east, align=right, text width=1cm] (text_rst_n) at ([xshift=-0.1em] \p3) {\fontb{rst\_n}}
+        node[circ] (circ_rst_n) at (\p3) {}
+    };
+  \draw[thick,brown] (circ_rst_n) -| (counter-Nd.south); % -Nd offsets bubble
+  \draw[thick,brown] (circ_rst_n) -| (R1-Nd.south);
+  \draw[thick,brown] (circ_rst_n) -| (R2-Nd.south);
+  \draw[thick,brown] (circ_rst_n) -| ++(2.25cm,0) |- ++(0,-4.5cm) -| (Rskew-Nd.south);
+
+  % ui_in0
+  \draw let
+    \p1 = (portin),
+    \p2 = ([below left=5mm of R1,xshift=-5mm,yshift=-33mm] R1),
+    \p3 = (\x1,\y2)
+    in {
+      node[anchor=east, align=right, text width=2cm] (text_ui_in0) at ([xshift=-0.1em] \p3) {\fontb{ui\_in[0]}}
+      node[circ] (circ_ui_in0) at (\p3) {}
+    };
+  \draw[thick, teal] (circ_ui_in0) -- +(12cm,0) node[above, midway] {clk2} -| ([xshift=-3mm] R2.pin 3) |- (R2.pin 3);
+  \draw[thick, teal] (circ_ui_in0) -| ([xshift=-3mm] R1.pin 3) |- (R1.pin 3);
+  \draw[thick, teal] (Rskew.pin 6) -- ++(3,0);
+  \draw[thick, teal] (circ_ui_in0) |- ++(0.75cm,0) |- ++(0,-2.28cm) -| (Rskew.pin 3); % -2.28cm could be better specified
+
+  % ui_in1
+  \draw let
+    \p1 = (portin),
+    \p2 = (counter.pin 1),
+    \p3 = (\x1,\y2)
+    in {
+        node[anchor=east, align=right, text width=2cm] (text_ui_in0) at ([xshift=-0.1em] \p3) {\fontb{ui\_in[2]}}
+        node[circ] (circ_ui_in1) at (\p3) {}
+    };
+  \draw[thick] (circ_ui_in1) -- (counter.pin 1);
+
+  % ui_in2
+  \draw let
+    \p1 = (portin),
+    \p2 = (counter.pin 2),
+    \p3 = (\x1,\y2)
+    in {
+        node[anchor=east, align=right, text width=2cm] (text_ui_in0) at ([xshift=-0.1em] \p3) {\fontb{ui\_in[1]}}
+        node[circ] (circ_ui_in2) at (\p3) {}
+    };
+  \draw[thick] (circ_ui_in2) -- (counter.pin 2);
+
+  \draw[very thick] (counter.pin 6) -- node[above, midway, yshift=0.25em] {$cnt$}
+                             node[midway] {\linebustick}
+                             node[below, midway, yshift=-0.25em] {$4$}
+                             node[below, midway, yshift=-5mm] {stage1}
+                             (R1.pin 1);
+
+  \draw[very thick] (R1.pin 6) -- node[above, midway, yshift=0.25em] {$cnt_{\textsubscript{\textsc{w}}}$}
+                             node[midway] {\linebustick}
+                             node[below, midway, yshift=-0.25em] {$4$}
+                             node[below, midway, yshift=-5mm] {stage2}
+                             (R2.pin 1);
+  % uio_out7
+  \draw let 
+    \p1 = (portout),
+    \p2 = ([yshift=6em] R2.pin 6),
+    \p3 = (\x1,\y2)
+    in {
+      node[anchor=west, text width=2cm] (text_uio_out7) at ([xshift=0.2em] \p3) {\fontb{uio\_out[7:4]}}
+      node[circ] (circ_uio_out7) at (\p3) {}
+    };
+  \draw let
+    \p1 = ([xshift=-12cm] circ_uio_out7),
+    \p2 = (R1.pin 1)
+    in [very thick] (circ_uio_out7) -| (\p1) -- (\x1,\y2) node[circ] {};
+
+  % uio_out3
+  \draw let 
+    \p1 = (portout),
+    \p2 = ([yshift=3em] R2.pin 6),
+    \p3 = (\x1,\y2)
+    in {
+      node[anchor=west, text width=2cm] (text_uio_out3) at ([xshift=0.2em] \p3) {\fontb{uio\_out[3:0]}}
+      node[circ] (circ_uio_out3) at (\p3) {}
+    };
+  \draw let
+    \p1 = ([xshift=-6.5cm] circ_uio_out3),
+    \p2 = (R2.pin 1)
+    in [very thick] (circ_uio_out3) -| (\p1) -- (\x1,\y2) node[circ] {};
+
+  % uo_out3
+  \draw let 
+    \p1 = (portout),
+    \p2 = (R2.pin 6),
+    \p3 = (\x1,\y2)
+    in [very thick] (R2.pin 6) -- node[above, midway, yshift=0.25em] {$cnt_{\textsubscript{\textsc{s}}}$}
+                             node[midway] {\linebustick}
+                             node[below, midway, yshift=-0.25em] {$4$}
+                             node[below, midway, yshift=-5mm] {\small stage3}
+                             (\p3) node[circ] {}
+                             node[anchor=west, text width=2cm] (text_uo_out3) at ([xshift=0.2em] \p3) {\fontb{uo\_out[3:0]}};
+
+  % uo_out4
+  \draw let
+    \p1 = (portout),
+    \p2 = (Rskew.pin 6),
+    \p3 = (\x1,\y2)
+    in {
+      node[anchor=west, text width=2cm] (text_uo_out4) at ([xshift=0.2em] \p3) {\fontb{uo\_out[4]}}
+      node[circ] (circ_uo_out4) at (\p3) {}
+    };
+  \draw let
+    \p1 = (portout),
+    \p2 = (Rskew.pin 6),
+    \p3 = (\x1,\y2)
+    in [thick] (Rskew.pin 6) -- node[above, midway] {$skew$} (\p3);
+
+  % uo_out7
+  \node[thick, ground] (ground) at ([xshift=-0.5cm, yshift=1cm] portout) {};
+  \draw let
+    \p1 = (portout),
+    \p2 = ([yshift=-1.5em] circ_uo_out4),
+    \p3 = (\x1,\y2)
+    in [thick] (ground) |- (\p3);
+  \draw let
+    \p1 = (portout),
+    \p2 = ([yshift=-1.5em] circ_uo_out4),
+    \p3 = (\x1,\y2)
+    in {
+      node[anchor=west, text width=2cm] (text_uo_out7) at ([xshift=0.2em] \p3) {\fontb{uo\_out[7:5]}}
+      node[circ] (circ_uo_out7) at (\p3) {}
+    };
+
+  \node[draw, align=center, text width=20cm] at ([xshift=-3em, yshift=3em] $(current page.south)$)
+    {\textbf{Based on Figure 29.3 pg580, Digital Design: A Systems Approach, ISBN 0521199506}};
+
+  %\draw (-1,0.25) -- (5,0.25);
+
+  \draw (0,0) -- (0,0.5);
+  \draw (0,0) -- (0,-1);
+  \draw (0,0) -- (0.5,0);
+  \draw (0,0) -- (-1,0);
+%\end{circuitikz}
+
+\begin{comment}
+% all comments here are treated as comments
+\end{comment}
+
+\end{tikzpicture}
+
+\clearpage
+\end{document}

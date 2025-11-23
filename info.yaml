@@ -24,8 +24,8 @@ project:
 pinout:
   # Inputs
   ui[0]: "clk1"
-  ui[1]: ""
-  ui[2]: ""
+  ui[1]: "0=Base-2 1=GrayCode"
+  ui[2]: "counter enable"
   ui[3]: ""
   ui[4]: ""
   ui[5]: ""
